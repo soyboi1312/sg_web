@@ -11,6 +11,7 @@ class TrackGenerator {
       "TOAD_J-Series_SubSurface": "SubSurface",
       "TOAD_J-Series_EW": "EW",
       "TOAD_J-Series_Reference_Point": "Reference Point",
+      "TOAD_J-Series_Unit": "Unit",
     };
 
     this.trackProfile = [
@@ -22,6 +23,7 @@ class TrackGenerator {
       "TOAD_J-Series_SubSurface",
       "TOAD_J-Series_EW",
       "TOAD_J-Series_Reference_Point",
+      "TOAD_J-Series_Unit",
     ];
 
     this.airPlat = [
@@ -1368,6 +1370,8 @@ class TrackGenerator {
       "J3.7 Track(EW Product Info) with J14.0 Parametric Info",
       "J14.0 Track(EW Parametrics)",
     ];
+
+    this.unitPlat = ["Air", "Land Point", "Land Track", "Surface", "Subsurface"]
 
     this.tracktype35 = ["TRACK", "POINT"];
 
@@ -4622,6 +4626,21 @@ class TrackGenerator {
         "Amplification",
         "SPI",
       ],
+      "TOAD_J-Series_Unit": [
+        "Track Number",
+        "True Course",
+        "Track Type",
+        "Unit Environ/Category",
+        "Altitude",
+        "Platform",
+        "Activity",
+        "Speed",
+        "C2 Ind",
+        "Indirect Indicator",
+        "Voice Call Sign",
+        "Reporting Unit",
+        "Track Label",
+      ],
     };
   }
 
@@ -4858,7 +4877,9 @@ class TrackGenerator {
       }
       if (this.isFieldSelected("Mode 2 Code")) {
         fields.push(
-          `<field name='Mode 2 Code' value='${Math.floor(Math.random() * 4096).toString(8)}'/>`
+          `<field name='Mode 2 Code' value='${Math.floor(
+            Math.random() * 4096
+          ).toString(8)}'/>`
         );
       }
       if (this.isFieldSelected("Mode 3 Code")) {
@@ -4967,7 +4988,9 @@ class TrackGenerator {
       }
       if (this.isFieldSelected("Mode 2 Code")) {
         fields.push(
-          `<field name='Mode 2 Code' value='${Math.floor(Math.random() * 4096).toString(8)}'/>`
+          `<field name='Mode 2 Code' value='${Math.floor(
+            Math.random() * 4096
+          ).toString(8)}'/>`
         );
       }
       if (this.isFieldSelected("Mode 3 Code")) {
@@ -5071,7 +5094,9 @@ class TrackGenerator {
 
       if (this.isFieldSelected("Mode 2 Code")) {
         fields.push(
-          `<field name='Mode 2 Code' value='${Math.floor(Math.random() * 4096).toString(8)}'/>`
+          `<field name='Mode 2 Code' value='${Math.floor(
+            Math.random() * 4096
+          ).toString(8)}'/>`
         );
       }
       if (this.isFieldSelected("Mode 3 Code")) {
@@ -5212,7 +5237,9 @@ class TrackGenerator {
       }
       if (this.isFieldSelected("Mode 2 Code")) {
         fields.push(
-          `<field name='Mode 2 Code' value='${Math.floor(Math.random() * 4096).toString(8)}'/>`
+          `<field name='Mode 2 Code' value='${Math.floor(
+            Math.random() * 4096
+          ).toString(8)}'/>`
         );
       }
       if (this.isFieldSelected("Mode 3 Code")) {
@@ -5407,6 +5434,78 @@ class TrackGenerator {
         `<field name='Identity' value='${this.getRandomChoice(this.trackID)}'/>`
       );
     }
+    if (profile === "TOAD_J-Series_Unit") {
+      if (this.isFieldSelected("Track Number")) {
+        fields.push(`<field name='Track Number' value='${trackLabel}'/>`);
+      }
+      if (this.isFieldSelected("True Course")) {
+        fields.push(
+          `<field name='True Course' value='${Math.floor(
+            Math.random() * 359
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Track Type")) {
+        fields.push(`<field name='Track Type' value='Unit'/>`);
+      }
+      if (this.isFieldSelected("Unit Environ/Category")) {
+        fields.push(
+          `<field name='Unit Environ/Category' value='${this.getRandomChoice(
+            this.unitPlat
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Altitude")) {
+        fields.push(
+          `<field name='Altitude' value='${Math.floor(
+            Math.random() * 120000
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Platform")) {
+        fields.push(
+          `<field name='Platform' value='${this.getRandomChoice(
+            this.airPlat
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Activity")) {
+        fields.push(
+          `<field name='Activity' value='${this.getRandomChoice(
+            this.airAct
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Speed")) {
+        fields.push(
+          `<field name='Speed' value='${Math.floor(Math.random() * 300)}'/>`
+        );
+      }
+      if (this.isFieldSelected("C2 Ind")) {
+        fields.push(
+          `<field name='C2 Ind' value='${this.getRandomChoice(this.spi)}'/>`
+        );
+      }
+      if (this.isFieldSelected("Indirect Indicator")) {
+        fields.push(
+          `<field name='Indirect Indicator' value='Direct'/>`
+        );
+      }
+      if (this.isFieldSelected("Voice Call Sign")) {
+        fields.push(
+          `<field name='Voice Call Sign' value='${this.getRandomChoice(
+            this.callSign
+          )}'/>`
+        );
+      }
+      if (this.isFieldSelected("Reporting Unit")) {
+        fields.push(
+          `<field name='Reporting Unit' value='${trackLabel}'/>);
+      }
+      if (this.isFieldSelected("Track Label")) {
+        fields.push(`<field name='Track Label' value='${trackLabel}'/>`);
+      }
+    }
     return fields.join("\n    ");
   }
 
@@ -5451,9 +5550,10 @@ class TrackGenerator {
     </body>
 </scenario>`;
 
-
-    const cleanXML = scenarioTemplate
-      .replace(/    <field name='' value=''>\n/g, "");
+    const cleanXML = scenarioTemplate.replace(
+      /    <field name='' value=''>\n/g,
+      ""
+    );
 
     this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
   }
