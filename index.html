@@ -70,41 +70,245 @@
         <label for="delay">Delay (seconds):</label>
         <input type="number" id="delay" value="0" title="number of seconds between tracks">
     </div>
+
     <div class="input-group">
-        <label for="TrackType">Track Type:</label> <select id="profileSelector" class="profile-select">
-        <option value="" disabled selected>Select a track profile...</option>
-    </select>
-    <div id="fieldOptions">
-        <h3>Fields to Include:</h3>
-        <div id="fieldCheckboxes"></div>
-    </div></div>
-    <script>
-        document.getElementById('latitude').addEventListener('input', function (e) {
-            const min = -89.99;
-            const max = 89.99;
-            let value = parseFloat(e.target.value);
+        Track Type: <select id="profileSelector" class="profile-select">
+            <option value="" disabled selected>Select a track profile...</option>
+        </select>
+        <div id="fieldOptions">
+            <h3>Fields to Include:</h3>
+            <div id="fieldCheckboxes"></div>
+        </div>
 
-            if (isNaN(value)) return;
+        <button id="generateButton">Generate Scenario</button>
 
-            if (value < min) e.target.value = min;
-            if (value > max) e.target.value = max;
-        });
-    </script>
-    <script>
-        document.getElementById('longitude').addEventListener('input', function (e) {
-            const min = -179.99;
-            const max = 179.99;
-            let value = parseFloat(e.target.value);
+        <script>
+            class TrackGenerator {
+                constructor() {
+                    this.selectedProfile = "All";
 
-            if (isNaN(value)) return;
+                    this.displayNames = {
+                        All: "All Tracks",
+                        "TOAD_J-Series_Air": "Air",
+                        "TOAD_J-Series_Land": "Land",
+                        "TOAD_J-Series_Space": "Space",
+                        "TOAD_J-Series_Surface": "Surface",
+                        "TOAD_J-Series_SubSurface": "SubSurface",
+                        "TOAD_J-Series_EW": "EW",
+                        "TOAD_J-Series_Reference_Point": "Reference Point",
+                        "TOAD_J-Series_Unit": "Unit",
+                    };
 
-            if (value < min) e.target.value = min;
-            if (value > max) e.target.value = max;
-        });
-    </script>
+                    this.trackProfile = [
+                        "All",
+                        "TOAD_J-Series_Air",
+                        "TOAD_J-Series_Land",
+                        "TOAD_J-Series_Space",
+                        "TOAD_J-Series_Surface",
+                        "TOAD_J-Series_SubSurface",
+                        "TOAD_J-Series_EW",
+                        "TOAD_J-Series_Reference_Point",
+                        "TOAD_J-Series_Unit",
+                    ];
 
-    <button id="generateButton">Generate Scenario</button>
-    <script src="files/generator.js"></script>
+                    this.airPlat = [
+                        "N.S.", "Fighter", "Fighter Bomber", "Attack", "Bomber", "Reconnaissance", "Tanker", "Tanker (Boom Only)", "Tanker (Drogue Only)", "Interceptor", "Transport", "Airborne Command Post (ACP)", "Missile", "Electronic Warfare (EW)", "Antisubmarine Warfare (ASW)", "Airborne Early Warning and Control (AEW)", "Maritime Patrol Aircraft (MPA)", "Search and Rescue (SAR)", "Drone", "Remotely Piloted Vehicle (RPV)", "Fixed Wing Gunship", "Civil, Airliner", "Civil, General", "Lighter than Air (LTA)", "Glider", "Decoy", "Helicopter (HELO)", "Attack Helicopter", "Helicopter Gunship", "Antisubmarine Warfare Helicopter (ASW HELO)", "Mine Warfare Helicopter", "Transport Helicopter", "Tactical Support", "Patrol", "Miscellaneous Fixed Wing", "Missile Control Unit", "Surface-to-Air Missile (SAM)", "Air-to-Surface Missile (ASM)", "Surface-to-Surface Missile (SSM)", "Logistic", "Air-to-Air Missile (AAM)", "Subsurface-to-Surface Missile", "Surface-to-Subsurface Missile", "Cruise Missile", "Ballistic Missile", "Airborne Land Surveillance", "Airborne Laser", "Unmanned Aerial Vehicle (UAV)", "Active Electronic Decoy", "Infrared Decoy", "Chaff Decoy", "Hypersonic Vehicle", "Network Enabled Weapon"
+                    ];
+
+                    this.airAct = [
+                        "N.S.", "Reconnaissance", "Over the Horizon Targeting (OTHT)", "Training", "Logistics Support", "Antisurface Warfare", "Electronic Warfare (EW)", "Surveillance", "Search and Rescue (SAR)", "Escorting", "Minelaying", "Transiting", "Special Weapons Attack", "Intruding", "Electronic Warfare Support (ES)", "Communications Relay", "Patrol (Ocean Surveillance)", "Airlift (Transport)", "Antisubmarine Warfare (ASW)", "Towing", "Air Assault", "Interception", "Electronic Attack (EA)", "Policing", "Conventional Attack", "Medical Evacuation (MEDEVAC)", "Mine Countermeasures", "Search", "Refueling/Tanking", "Interdiction", "Combat Air Patrol (CAP)", "Forward Air Controller (FAC)", "Very Important Person (VIP) Flight", "Noncombatant Operations", "Close Air Support (CAS)", "Airborne Early Warning (AEW)", "Ground Attack Tactics (GAT)", "Airborne Command Post (ACP)", "Rescue Combat Air Patrol (RESCAP)", "Surface Combat Air Patrol (SUCAP)", "Spotting", "Strike Warfare", "Special", "Hijack", "Jammer", "Trooplift", "XRay", "Antiair Warfare (AAW)", "Command and Control", "Counter-Air Warfare", "Return to Base (RTB)", "Mine Warfare", "Chaff Laying", "Video Data Linking (Targeting)", "Dipping", "Orbiting", "Under Recall", "Engaging", "Engaging (Priority Kill)", "Investigating", "Cleared to Drop", "Intervening", "Diverting", "Air-to-Ground", "Air-to-Air", "Precision Bombing", "Laser Designation", "Shadowing", "Covering", "Visual Identification", "High Energy Lasing", "Electronic Protection (EP)", "Special Operations", "Nuclear, Biological, Chemical (NBC) Operations", "Nuclear Operations", "Biological Operations", "Chemical Operations", "Aborting Mission", "Standoff Operations", "Combat Search and Rescue (CSAR)", "Aborting", "Awaiting Release", "Air Activity 1", "Air Activity 2", "Air Activity 3", "Air Activity 4", "Air Activity 5", "Air Activity 6", "Air Activity 7", "Air Activity 8", "Air Activity 9", "Air Activity 10", "Air Activity 11", "Air Activity 12"
+                    ];
+                    this.landPlat = ["N.S.", "Troop Concentration/Unit", "Headquarter Complex"];
+                    this.landAct = ["N.S.", "Holding", "Delaying"];
+                    this.landSpec = ["N.S.", "TOW", "DRAGON"];
+                    this.surfacePlat = ["N.S.", "Aircraft Carrier", "Battleship"];
+                    this.surfaceAct = ["N.S.", "Air Warfare Support", "Over the Horizon Targeting (OTHT)"];
+                    this.surfaceSpec = ["N.S.", "CVN GENERAL (ACFT CARRIER, NUCLEAR)", "ENTERPRISE CVN"];
+                    this.subsurfacePlat = ["N.S.", "Submarine Propulsion Unknown", "Diesel Electric Submarine General"];
+                    this.subsurfaceAct = ["N.S.", "Reconnaissance", "Over The Horizon Targeting (OTHT)"];
+                    this.subsurfaceSpec = ["N.S.", "SS GENERAL (SUBMARINE, GENERAL, NON-NUCLEAR)", "ABTAO SS"];
+                    this.spacePlat = ["N.S.", "Satellite", "Base"];
+                    this.spaceAct = ["N.S.", "Reconnaissance", "Antispace Warfare"];
+                    this.spaceSpec = ["N.S.", "Frog-7", "SS-21 Mod 2"];
+                    this.refPoint = ["Emergency", "Hazard", "Reference Point (General)"];
+                    this.refAmp = ["N.S.", "Marshall Point", "Waypoint"];
+                    this.ewEnv = ["Air", "Land", "Surface"];
+                    this.ewEnvInd = ["J3.7 Track(EW Product Info)", "J3.7 Track(EW Product Info) with J14.0 Parametric Info"];
+
+                    this.profileFieldsMap = {
+                        "TOAD_J-Series_Air": [
+                            "Callsign Published", "True Course", "Speed", "Altitude", "Platform", "Activity", "Specific Type", "Strength", "Local TQ", "SPI", "Identity", "Hour", "Minute", "Mode 1 Code", "Mode 2 Code", "Mode 3 Code", "Mode 4 Indicator", "Mode 5 Indicator", "Mode 5 Nationality",
+                        ],
+                        "TOAD_J-Series_Land": [
+                            "True Course", "Speed", "Elevation", "Point/Track Ind", "Platform", "Activity", "Specific Type", "Strength", "Local TQ", "SPI", "Identity", "Hour", "Minute", "Mode 1 Code", "Mode 2 Code", "Mode 3 Code", "Mode 4 Indicator", "Mode 5 Indicator", "Mode 5 Nationality",
+                        ],
+                        "TOAD_J-Series_Space": [
+                            "True Course", "Speed", "Altitude", "Platform", "Activity", "Specific Type", "Local TQ", "SPI", "Identity", "Minute", "Seconds", "Boost Ind", "Lost Track Indicator", "Space Amplification", "Space Amplification Ambiguity 1",
+                        ],
+                        "TOAD_J-Series_Surface": [
+                            "True Course", "Speed", "Platform", "Activity", "Specific Type", "Strength", "Local TQ", "SPI", "Identity", "Hour", "Minute", "Mode 1 Code", "Mode 3 Code", "Mode 2 Code", "Mode 4 Indicator", "Mode 5 Indicator", "Mode 5 Nationality",
+                        ],
+                        "TOAD_J-Series_SubSurface": [
+                            "True Course", "Speed", "Depth", "Platform", "Activity", "Specific Type", "Local TQ", "SPI", "Identity", "Hour", "Minute", "Mode 1 Code", "Mode 2 Code", "Mode 3 Code", "Mode 4 Indicator", "Mode 5 Indicator", "Mode 5 Nationality", "Subsurface Sensor", "Confidence Level", "Depth Contact",
+                        ],
+                        "TOAD_J-Series_EW": [
+                            "Track Type", "True Course", "Speed", "Altitude", "Environ/Category", "Platform", "Activity", "Track 3.7/14.0 Indicator", "Specific Type", "SPI", "Identity",
+                        ],
+                        "TOAD_J-Series_Reference_Point": [
+                            "True Course", "Speed", "Altitude", "Amplification", "SPI",
+                        ],
+                        "TOAD_J-Series_Unit": [
+                            "Environ/Category",
+                            "Platform",
+                            "Activity",
+                            "Specific Type",
+                            "Strength",
+                            "Identity",
+                            "True Course",
+                            "Speed",
+                            "Altitude",
+                        ],
+                    };
+                }
+
+                getRandomChoice(arr) {
+                    return arr[Math.floor(Math.random() * arr.length)];
+                }
+
+                populateFieldCheckboxes() {
+                    const container = document.getElementById("fieldCheckboxes");
+                    container.innerHTML = "";
+
+                    if (this.selectedProfile === "All") {
+                        container.style.display = "none";
+                        return;
+                    }
+
+                    const fields = this.profileFieldsMap[this.selectedProfile] || [];
+                    container.style.display = "block";
+
+                    fields.forEach((fieldName) => {
+                        const checkboxId = `checkbox_${fieldName.replace(/ /g, "_")}`;
+                        const div = document.createElement("div");
+
+                        const checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.id = checkboxId;
+                        checkbox.value = fieldName;
+                        checkbox.checked = true;
+
+                        const label = document.createElement("label");
+                        label.htmlFor = checkboxId;
+                        label.textContent = fieldName;
+
+                        div.appendChild(checkbox);
+                        div.appendChild(label);
+                        container.appendChild(div);
+                    });
+                }
+
+                initializeProfileSelector() {
+                    const selector = document.getElementById("profileSelector");
+                    if (!selector) return;
+
+                    selector.innerHTML = "";
+                    this.trackProfile.forEach((profile) => {
+                        const option = document.createElement("option");
+                        option.value = profile;
+                        option.textContent = this.displayNames[profile];
+                        selector.appendChild(option);
+                    });
+
+                    selector.value = "All";
+                    this.selectedProfile = "All";
+
+                    selector.addEventListener("change", (e) => {
+                        this.selectedProfile = e.target.value;
+                        this.populateFieldCheckboxes();
+                    });
+
+                    this.populateFieldCheckboxes();
+                }
+
+                isFieldSelected(fieldName) {
+                    if (this.selectedProfile === "All") return true;
+                    const checkbox = document.querySelector(`input[value="${fieldName}"]`);
+                    return checkbox ? checkbox.checked : false;
+                }
+
+                generateTrackCode(nTracks, delaySecs, startLat, startLon) {
+                    let trackLines = [];
+                    return trackLines.join('\n');
+                }
+
+                generateProfileFields(profile, trackLabel, index) {
+                    let fields = [];
+                    return fields.join('\n    ');
+                }
+
+                downloadXML(content, filename) {
+                    const blob = new Blob([content], { type: "application/xml" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                generateScenario() {
+                    const numTracks = parseInt(document.getElementById("numTracks").value);
+                    const lat = parseFloat(document.getElementById("latitude").value);
+                    const lon = parseFloat(document.getElementById("longitude").value);
+                    const delay = parseInt(document.getElementById("delay").value);
+                    const trackBlock = this.generateTrackCode(numTracks, delay, lat, lon);
+
+                    const scenarioTemplate = `<?xml version="1.0"?>
+        <scenario>
+            <body>
+                ${trackBlock}
+            </body>
+        </scenario>`;
+
+                    const cleanXML = scenarioTemplate.replace(/    <field name='' value=''>\n/g, "");
+
+                    this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
+                }
+            }
+
+            const generator = new TrackGenerator();
+
+            document.getElementById('latitude').addEventListener('input', function (e) {
+                const min = -89.99;
+                const max = 89.99;
+                let value = parseFloat(e.target.value);
+                if (isNaN(value)) return;
+                if (value < min) e.target.value = min;
+                if (value > max) e.target.value = max;
+            });
+
+            document.getElementById('longitude').addEventListener('input', function (e) {
+                const min = -179.99;
+                const max = 179.99;
+                let value = parseFloat(e.target.value);
+                if (isNaN(value)) return;
+                if (value < min) e.target.value = min;
+                if (value > max) e.target.value = max;
+            });
+
+            if (document.getElementById("profileSelector")) {
+                generator.initializeProfileSelector();
+            }
+
+            const generateButton = document.getElementById("generateButton");
+            if (generateButton) {
+                generateButton.addEventListener("click", () => {
+                    generator.generateScenario();
+                });
+            } else {
+                console.error("Generate button not found! Check HTML ID");
+            }
+        </script>
 </body>
 
 </html>
