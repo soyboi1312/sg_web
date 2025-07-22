@@ -471,6 +471,8 @@
                         "Speed",
                         "Altitude",
                         "C2 Ind",
+                        "Indirect Indicator",
+                        "Voice Call Sign"
                     ],
                 };
             }
@@ -840,21 +842,27 @@
                             )}'/>`
                         );
                     }
-                    fields.push(
-                        `<field name='Mode 4 Indicator' value='${this.getRandomChoice(
-                            this.mode4
-                        )}'/>`
-                    );
-                    fields.push(
-                        `<field name='Mode 5 Indicator' value='${this.getRandomChoice(
-                            this.mode5
-                        )}'/>`
-                    );
-                    fields.push(
-                        `<field name='Mode 5 Nationality' value='${this.getRandomChoice(
-                            this.mode5Nat
-                        )}'/>`
-                    );
+                    if (this.isFieldSelected("Mode 4 Indicator")) {
+                        fields.push(
+                            `<field name='Mode 4 Indicator' value='${this.getRandomChoice(
+                                this.mode4
+                            )}'/>`
+                        );
+                    }
+                    if (this.isFieldSelected("Mode 5 Indicator")) {
+                        fields.push(
+                            `<field name='Mode 5 Indicator' value='${this.getRandomChoice(
+                                this.mode5
+                            )}'/>`
+                        );
+                    }
+                    if (this.isFieldSelected("Mode 5 Nationality")) {
+                        fields.push(
+                            `<field name='Mode 5 Nationality' value='${this.getRandomChoice(
+                                this.mode5Nat
+                            )}'/>`
+                        );
+                    }
                     fields.push(`<field name='Track Label' value='${trackLabel}'/>`);
                 }
                 if (profile === "TOAD_J-Series_SubSurface") {
@@ -1377,28 +1385,28 @@
 
                     fields.push(
                         `<field name='Track Label' value='${trackLabel} '/>`);
-
-                    return fields.join("\n    ");
                 }
+                return fields.join("\n    ");
+            }
 
-                downloadXML(content, filename) {
-                    const blob = new Blob([content], { type: "application/xml" });
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    link.download = filename;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
+            downloadXML(content, filename) {
+                const blob = new Blob([content], { type: "application/xml" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
 
-                generateScenario() {
-                    const numTracks = parseInt(document.getElementById("numTracks").value);
-                    const lat = parseFloat(document.getElementById("latitude").value);
-                    const lon = parseFloat(document.getElementById("longitude").value);
-                    const delay = parseInt(document.getElementById("delay").value);
-                    const trackBlock = this.generateTrackCode(numTracks, delay, lat, lon);
+            generateScenario() {
+                const numTracks = parseInt(document.getElementById("numTracks").value);
+                const lat = parseFloat(document.getElementById("latitude").value);
+                const lon = parseFloat(document.getElementById("longitude").value);
+                const delay = parseInt(document.getElementById("delay").value);
+                const trackBlock = this.generateTrackCode(numTracks, delay, lat, lon);
 
-                    const scenarioTemplate = `<?xml version = "1.0"?>
+                const scenarioTemplate = `<?xml version = "1.0"?>
 <scenario>
     <definestring name="Interface" value="C2 HOST" />
     <definestring name="Air" value="12" />
@@ -1422,16 +1430,16 @@
     </body>
 </scenario>`;
 
-                    const cleanXML = scenarioTemplate.replace(
-                        /    <field name='' value=''>\n/g,
-                        ""
-                    );
+                const cleanXML = scenarioTemplate.replace(
+                    /    <field name='' value=''>\n/g,
+                    ""
+                );
 
-                    this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
-                }
+                this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
             }
+        }
 
-            const generator = new TrackGenerator();
+        const generator = new TrackGenerator();
 
         document.addEventListener("DOMContentLoaded", () => {
             if (document.getElementById("profileSelector")) {
