@@ -573,12 +573,12 @@
                     }
 
                     const trackEntry = `
-<createtrack name='${trackLabel}' profile='${profile}'>
-    <field name='Latitude' value='${lat.toFixed(6)}'/>
-    <field name='Longitude' value='${lon.toFixed(6)}'/>
-    ${this.generateProfileFields(profile, trackLabel, i)}
-</createtrack>
-<wait seconds="${delaySecs}"/>`;
+                        <createtrack name='${trackLabel}' profile='${profile}'>
+                            <field name='Latitude' value='${lat.toFixed(6)}'/>
+                            <field name='Longitude' value='${lon.toFixed(6)}'/>
+                            ${this.generateProfileFields(profile, trackLabel, i)}
+                        </createtrack>
+                        <wait seconds="${delaySecs}"/>`;
 
                     trackLines.push(trackEntry);
                 }
@@ -1355,50 +1355,50 @@
                             `<field name='Speed' value='${Math.floor(Math.random() * 300)}'/>`
                         );
                     }
-                }
-                if (this.isFieldSelected("C2 Ind")) {
+
+                    if (this.isFieldSelected("C2 Ind")) {
+                        fields.push(
+                            `<field name='C2 Ind' value='${this.getRandomChoice(this.spi)}'/>`
+                        );
+                    }
+
                     fields.push(
-                        `<field name='C2 Ind' value='${this.getRandomChoice(this.spi)}'/>`
-                    );
-                }
+                        `<field name='Indirect Indicator' value='Direct'/>`);
 
-                fields.push(
-                    `<field name='Indirect Indicator' value='Direct'/>`);
-
-                if (this.isFieldSelected("Voice Call Sign")) {
+                    if (this.isFieldSelected("Voice Call Sign")) {
+                        fields.push(
+                            `<field name='Voice Call Sign' value='${this.getRandomChoice(
+                                this.callSign
+                            )}'/>`
+                        );
+                    }
                     fields.push(
-                        `<field name='Voice Call Sign' value='${this.getRandomChoice(
-                            this.callSign
-                        )}'/>`
-                    );
+                        `<field name='Reporting Unit' value='${trackLabel}'/>`);
+
+                    fields.push(
+                        `<field name='Track Label' value='${trackLabel} '/>`);
+
+                    return fields.join("\n    ");
                 }
-                fields.push(
-                    `<field name='Reporting Unit' value='${trackLabel}'/>`);
 
-                fields.push(
-                    `<field name='Track Label' value='${trackLabel} '/>`);
+                downloadXML(content, filename) {
+                    const blob = new Blob([content], { type: "application/xml" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
 
-                return fields.join("\n    ");
-            }
+                generateScenario() {
+                    const numTracks = parseInt(document.getElementById("numTracks").value);
+                    const lat = parseFloat(document.getElementById("latitude").value);
+                    const lon = parseFloat(document.getElementById("longitude").value);
+                    const delay = parseInt(document.getElementById("delay").value);
+                    const trackBlock = this.generateTrackCode(numTracks, delay, lat, lon);
 
-            downloadXML(content, filename) {
-                const blob = new Blob([content], { type: "application/xml" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-
-            generateScenario() {
-                const numTracks = parseInt(document.getElementById("numTracks").value);
-                const lat = parseFloat(document.getElementById("latitude").value);
-                const lon = parseFloat(document.getElementById("longitude").value);
-                const delay = parseInt(document.getElementById("delay").value);
-                const trackBlock = this.generateTrackCode(numTracks, delay, lat, lon);
-
-                const scenarioTemplate = `<?xml version = "1.0"?>
+                    const scenarioTemplate = `<?xml version = "1.0"?>
 <scenario>
     <definestring name="Interface" value="C2 HOST" />
     <definestring name="Air" value="12" />
@@ -1422,16 +1422,16 @@
     </body>
 </scenario>`;
 
-                const cleanXML = scenarioTemplate.replace(
-                    /    <field name='' value=''>\n/g,
-                    ""
-                );
+                    const cleanXML = scenarioTemplate.replace(
+                        /    <field name='' value=''>\n/g,
+                        ""
+                    );
 
-                this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
+                    this.downloadXML(cleanXML, `${numTracks} Track TacView Scenario.xml`);
+                }
             }
-        }
 
-        const generator = new TrackGenerator();
+            const generator = new TrackGenerator();
 
         document.addEventListener("DOMContentLoaded", () => {
             if (document.getElementById("profileSelector")) {
