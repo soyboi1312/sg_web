@@ -575,13 +575,12 @@
                     }
 
                     const trackEntry = `
-                        <createtrack name='${trackLabel}' profile='${profile}'>
-                            <field name='Latitude' value='${lat.toFixed(6)}'/>
-                            <field name='Longitude' value='${lon.toFixed(6)}'/>
-                            ${this.generateProfileFields(profile, trackLabel, i)}
-                        </createtrack>
-                        <wait seconds="${delaySecs}"/>`;
-
+<createtrack name='${trackLabel}' profile='${profile}'>
+    <field name='Latitude' value='${lat.toFixed(6)}'/>
+    <field name='Longitude' value='${lon.toFixed(6)}'/>
+    ${this.generateProfileFields(profile, trackLabel, i)}
+</createtrack>
+<wait seconds="${delaySecs}"/>`;
                     trackLines.push(trackEntry);
                 }
                 return trackLines.join("\n");
@@ -1441,22 +1440,18 @@
 
         const generator = new TrackGenerator();
 
-        document.addEventListener("DOMContentLoaded", () => {
-            if (document.getElementById("profileSelector")) {
-                generator.initializeProfileSelector();
-            }
+        if (document.getElementById("profileSelector")) {
+            generator.initializeProfileSelector();
+        }
 
-            const generateButton = document.getElementById("generateButton");
-            if (generateButton) {
-                generateButton.addEventListener("click", () => {
-                    generator.generateScenario();
-                });
-            } else {
-                console.error("Generate button not found! Check HTML ID");
-            }
-        });
-
+        const generateButton = document.getElementById("generateButton");
+        if (generateButton) {
+            generateButton.addEventListener("click", () => {
+                generator.generateScenario();
+            });
+        } else {
+            console.error("Generate button not found! Check HTML ID");
+        }
     </script>
 </body>
-
 </html>
