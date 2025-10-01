@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>TacView Scenario Generator</title>
     <style>
@@ -119,7 +118,6 @@
                     "TOAD_J-Series_SubSurface": "SubSurface",
                     "TOAD_J-Series_EW": "EW",
                     "TOAD_J-Series_Reference_Point": "Reference Point",
-                    "TOAD_J-Series_Unit": "Unit",
                 };
 
                 this.trackProfile = [
@@ -131,7 +129,6 @@
                     "TOAD_J-Series_SubSurface",
                     "TOAD_J-Series_EW",
                     "TOAD_J-Series_Reference_Point",
-                    "TOAD_J-Series_Unit",
                 ];
 
                 this.airPlat = [
@@ -443,7 +440,6 @@
                         "Depth Contact",
                     ],
                     "TOAD_J-Series_EW": [
-                        "Track Type",
                         "True Course",
                         "Speed",
                         "Altitude",
@@ -462,24 +458,12 @@
                         "Amplification",
                         "SPI",
                     ],
-                    "TOAD_J-Series_Unit": [
-                        "Environ/Category",
-                        "Platform",
-                        "Activity",
-                        "Specific Type",
-                        "True Course",
-                        "Speed",
-                        "Altitude",
-                        "C2 Ind",
-                        "Indirect Indicator",
-                        "Voice Call Sign"
-                    ],
                 };
             }
 
             getRandomChoice(arr) {
                 if (!arr || arr.length === 0) {
-                    return "N.S."; // Return a default value if the array is empty or undefined
+                    return "N.S."; 
                 }
                 return arr[Math.floor(Math.random() * arr.length)];
             }
